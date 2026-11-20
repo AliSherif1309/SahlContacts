@@ -33,7 +33,8 @@ class UnionProvider : ContentProvider() {
                 }
                 "favorites" -> {
                     val out = MatrixCursor(arrayOf("id", "name", "number", "photo"))
-                    for (p in Repo.list(c)) if (p.starred) out.addRow(arrayOf(p.id, p.name, p.numbers.firstOrNull(), p.photo))
+                    val hidden = Vault.hidden(c)
+                    for (p in Repo.list(c)) if (p.starred && p.lookup !in hidden) out.addRow(arrayOf(p.id, p.name, p.numbers.firstOrNull(), p.photo))
                     out
                 }
                 else -> null

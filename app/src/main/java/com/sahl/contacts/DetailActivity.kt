@@ -42,9 +42,9 @@ class DetailActivity : SahlActivity() {
     private fun build(f: Full, photo: android.graphics.Bitmap?) {
         root.removeAllViews()
         root.addView(header("", true, listOf(
-            (if (f.starred) "★" else "☆") to { Repo.setStar(this, f.id, !f.starred); load() },
+            (if (f.starred) "★" else "☆") to { Repo.setStar(this, f.id, !f.starred); FavWidget.refresh(this); load() },
             "✎" to { startActivity(Intent(this, EditActivity::class.java).putExtra("id", f.id)) },
-            "🗑" to { confirmDelete(f) }
+            "⋮" to { menu(f) }
         )))
         val body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(px(16), px(20), px(16), px(32)) }
         root.addView(ScrollView(this).apply { addView(body) }, LinearLayout.LayoutParams(-1, 0, 1f))
@@ -158,6 +158,35 @@ class DetailActivity : SahlActivity() {
         val i = Intent(Intent.ACTION_SEND).setType(ContactsContract.Contacts.CONTENT_VCARD_TYPE)
             .putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         go(Intent.createChooser(i, getString(R.string.share)))
+    }
+
+    private fun menu(f: Full) {
+        val hidden = Vault.isHidden(this, f.lookup)
+        val items = arrayOf(getString(R.string.qr_code), getString(if (hidden) R.string.unhide else R.string.hide), getString(R.string.delete))
+        AlertDialog.Builder(this).setItems(items) { _, i ->
+            when (i) {
+                0 -> showQr(f)
+                1 -> {
+                    Vault.set(this, f.lookup, !hidden)
+                    if (!hidden) Toast.makeText(this, R.string.hidden_note, Toast.LENGTH_LONG).show()
+                    FavWidget.refresh(this)
+                }
+                2 -> confirmDelete(f)
+            }
+        }.show()
+    }
+
+    private fun showQr(f: Full) {
+        val size = px(260)
+        val bmp = try { Qr.bitmap(Qr.mecard(f), size) } catch (e: Exception) { return }
+        val box = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER; setPadding(px(16), px(16), px(16), px(8))
+            addView(ImageView(this@DetailActivity).apply {
+                setImageBitmap(bmp); setBackgroundColor(0xFFFFFFFF.toInt()); setPadding(px(10), px(10), px(10), px(10))
+            }, LinearLayout.LayoutParams(size + px(20), size + px(20)))
+            addView(text(getString(R.string.qr_hint), 13f, col(R.color.sub)).apply { gravity = Gravity.CENTER; setPadding(0, px(10), 0, 0) })
+        }
+        AlertDialog.Builder(this).setTitle(f.name).setView(box).setPositiveButton(android.R.string.ok, null).show()
     }
 
     private fun confirmDelete(f: Full) {

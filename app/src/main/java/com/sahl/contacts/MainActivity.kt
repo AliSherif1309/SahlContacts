@@ -48,6 +48,7 @@ class MainActivity : SahlActivity() {
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(col(R.color.bg)) }
         root.addView(header(getString(R.string.app_name), false, listOf(
             "＋" to { startActivity(Intent(this, EditActivity::class.java)) },
+            "🔒" to { toggleVault() },
             "⚙" to { startActivity(Intent(this, SettingsActivity::class.java)) }
         )))
 
@@ -110,6 +111,7 @@ class MainActivity : SahlActivity() {
         setContentView(root)
 
         Updater.dailyCheck(this)
+        Birthdays.schedule(this)
         if (granted()) start() else askPermissions()
     }
 
@@ -155,6 +157,7 @@ class MainActivity : SahlActivity() {
                 if (gf != null && !groups.containsKey(gf)) groupFilter = null
                 Thumbs.clear()
                 buildChips(); buildFavorites(); filter()
+                FavWidget.refresh(this)
             }
         }.start()
     }
@@ -177,7 +180,8 @@ class MainActivity : SahlActivity() {
 
     private fun buildFavorites() {
         favRow.removeAllViews()
-        val favs = all.filter { it.starred }
+        val hidden = Vault.hidden(this)
+        val favs = all.filter { it.starred && (Vault.unlocked() || it.lookup !in hidden) }
         for (p in favs) {
             val cell = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
@@ -199,7 +203,10 @@ class MainActivity : SahlActivity() {
         val words = Norm.text(query).split(' ').filter { it.isNotBlank() }
         val dq = Norm.digits(query)
         val inGroup = groupFilter?.let { t -> groups[t]?.flatMap { members[it] ?: emptySet() }?.toSet() ?: emptySet() }
+        val hidden = Vault.hidden(this)
+        val reveal = Vault.unlocked()
         shown = all.filter { p ->
+            (reveal || p.lookup !in hidden) &&
             (inGroup == null || p.id in inGroup) &&
                 (words.isEmpty() || words.all { w -> p.key.contains(w) } || (dq.length >= 3 && p.digits.contains(dq)))
         }
@@ -229,6 +236,11 @@ class MainActivity : SahlActivity() {
             }
             true
         }
+    }
+
+    private fun toggleVault() {
+        if (Vault.unlocked()) { Vault.lock(); buildFavorites(); filter() }
+        else Vault.unlock(this) { buildFavorites(); filter() }
     }
 
     private fun open(p: Person) {
@@ -270,7 +282,8 @@ class MainActivity : SahlActivity() {
             h.head.text = p.section
             h.av.background = oval(avatarColor(p.name))
             h.letter.text = p.section.take(1).let { if (it == "#") p.name.take(1) else it }
-            h.name.text = if (p.starred) "${p.name} ★" else p.name
+            val locked = Vault.isHidden(this@MainActivity, p.lookup)
+            h.name.text = p.name + (if (p.starred) " ★" else "") + (if (locked) " 🔒" else "")
             h.sub.text = p.numbers.firstOrNull() ?: ""
             h.sub.visibility = if (p.numbers.isEmpty()) View.GONE else View.VISIBLE
             Thumbs.load(this@MainActivity, p.photo, h.iv, h.letter)
