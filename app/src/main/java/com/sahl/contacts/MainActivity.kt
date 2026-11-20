@@ -112,8 +112,11 @@ class MainActivity : SahlActivity() {
 
         Updater.dailyCheck(this)
         Birthdays.schedule(this)
+        if (crashOpen) return
         if (granted()) start() else askPermissions()
     }
+
+    override fun onCrashClosed() { if (granted()) start() else askPermissions() }
 
     private fun askPermissions() {
         val p = mutableListOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
@@ -138,6 +141,7 @@ class MainActivity : SahlActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (crashOpen) return
         if (granted()) start() else permBox.visibility = View.VISIBLE
     }
 

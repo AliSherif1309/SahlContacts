@@ -66,6 +66,27 @@ object Sahl {
     }
 
     fun countryCode(c: Context) = prefs(c).getString("cc", "974") ?: "974"
+
+    /** Saves any crash so the app can show it on the next start (shared Sahl debug helper). */
+    fun catchCrashes(c: Context) {
+        val app = c.applicationContext
+        val prev = Thread.getDefaultUncaughtExceptionHandler()
+        if (prev is SahlCrash) return
+        Thread.setDefaultUncaughtExceptionHandler(SahlCrash(app, prev))
+    }
+
+    fun lastCrash(c: Context): String? = prefs(c).getString("crash", null)
+    fun clearCrash(c: Context) = prefs(c).edit().remove("crash").apply()
+}
+
+class SahlCrash(private val app: Context, private val prev: Thread.UncaughtExceptionHandler?) : Thread.UncaughtExceptionHandler {
+    override fun uncaughtException(t: Thread, e: Throwable) {
+        try {
+            val v = try { app.packageManager.getPackageInfo(app.packageName, 0).versionName } catch (x: Exception) { "?" }
+            Sahl.prefs(app).edit().putString("crash", "v$v\n" + android.util.Log.getStackTraceString(e).take(6000)).commit()
+        } catch (x: Exception) { }
+        prev?.uncaughtException(t, e)
+    }
 }
 
 /** Arabic-aware text and phone-number normalisation. */
@@ -159,10 +180,28 @@ abstract class SahlActivity : Activity() {
     val font: Typeface? by lazy { try { resources.getFont(R.font.thmanyah) } catch (e: Exception) { null } }
     val rtl get() = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
 
+    /** True while the crash report is on screen — screens wait before loading data. */
+    var crashOpen = false
+    open fun onCrashClosed() {}
+
     override fun attachBaseContext(newBase: Context) { super.attachBaseContext(Sahl.wrap(newBase)) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Sahl.catchCrashes(this)
         super.onCreate(savedInstanceState)
+        Sahl.lastCrash(this)?.let { log ->
+            Sahl.clearCrash(this)
+            crashOpen = true
+            android.app.AlertDialog.Builder(this).setTitle("Sahl crash report")
+                .setMessage(log.take(1500))
+                .setPositiveButton("Copy") { _, _ ->
+                    getSystemService(android.content.ClipboardManager::class.java)
+                        .setPrimaryClip(android.content.ClipData.newPlainText("crash", log))
+                }
+                .setNegativeButton("Close", null)
+                .setOnDismissListener { crashOpen = false; onCrashClosed() }
+                .show()
+        }
         window.statusBarColor = col(R.color.emerald_dark)
         window.navigationBarColor = col(R.color.bg)
     }
