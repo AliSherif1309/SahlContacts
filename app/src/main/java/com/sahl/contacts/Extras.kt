@@ -111,12 +111,12 @@ class BirthdayReceiver : BroadcastReceiver() {
                 val list = try { Birthdays.today(ctx) } catch (e: Exception) { emptyMap() }
                 if (list.isNotEmpty()) {
                     val nm = ctx.getSystemService(NotificationManager::class.java)
-                    nm.createNotificationChannel(NotificationChannel("birthdays", c.getString(R.string.birthdays), NotificationManager.IMPORTANCE_DEFAULT))
+                    nm.createNotificationChannel(Sahl.chimeChannel(ctx, "birthdays_chime", c.getString(R.string.birthdays), NotificationManager.IMPORTANCE_DEFAULT))
                     for ((id, name) in list) {
                         val open = PendingIntent.getActivity(ctx, id.toInt(),
                             Intent(ctx, DetailActivity::class.java).putExtra("id", id).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-                        nm.notify(10_000 + id.toInt(), Notification.Builder(ctx, "birthdays").setSmallIcon(R.drawable.ic_person)
+                        nm.notify(10_000 + id.toInt(), Notification.Builder(ctx, "birthdays_chime").setSmallIcon(R.drawable.ic_person)
                             .setContentTitle(c.getString(R.string.birthday_today, name))
                             .setContentText(c.getString(R.string.birthday_wish))
                             .setContentIntent(open).setAutoCancel(true).build())
