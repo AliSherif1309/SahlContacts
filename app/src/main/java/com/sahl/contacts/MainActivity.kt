@@ -214,9 +214,10 @@ class MainActivity : SahlActivity() {
             (inGroup == null || p.id in inGroup) &&
                 (words.isEmpty() || words.all { w -> p.key.contains(w) } || (dq.length >= 3 && p.digits.contains(dq)))
         }
-        favBox.visibility = if (query.isBlank() && groupFilter == null && all.any { it.starred }) View.VISIBLE else View.GONE
-        // header views stay in the list; hide its content height when not needed
-        favBox.layoutParams = AbsListView.LayoutParams(-1, if (favBox.visibility == View.VISIBLE) -2 else 1)
+        // Keep the header itself in place (replacing its LayoutParams makes ListView recycle it); hide its contents instead
+        val showFav = query.isBlank() && groupFilter == null && favRow.childCount > 0
+        for (i in 0 until favBox.childCount) favBox.getChildAt(i).visibility = if (showFav) View.VISIBLE else View.GONE
+        favBox.setPadding(px(12), if (showFav) px(4) else 0, px(12), if (showFav) px(4) else 0)
         adapter.notifyDataSetChanged()
         empty.text = getString(if (all.isEmpty()) R.string.no_contacts else R.string.no_results)
         empty.visibility = if (shown.isEmpty() && granted()) View.VISIBLE else View.GONE
@@ -262,7 +263,8 @@ class MainActivity : SahlActivity() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val v: LinearLayout
             val h: Holder
-            if (convertView == null) {
+            val reuse = convertView?.tag as? Holder
+            if (reuse == null) {
                 v = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL }
                 val head = text("", 13f, col(R.color.gold), true).apply { setPadding(px(20), px(10), px(20), px(2)) }
                 val row = LinearLayout(this@MainActivity).apply {
@@ -278,7 +280,7 @@ class MainActivity : SahlActivity() {
                 v.addView(head); v.addView(row)
                 h = Holder(head, f, iv, letter, name, sub)
                 v.tag = h
-            } else { v = convertView as LinearLayout; h = v.tag as Holder }
+            } else { v = convertView as LinearLayout; h = reuse }
 
             val p = shown[position]
             val showHead = query.isBlank() && (position == 0 || shown[position - 1].section != p.section)
