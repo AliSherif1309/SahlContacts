@@ -116,10 +116,10 @@ class SettingsActivity : SahlActivity() {
 
     private fun card(title: Int): LinearLayout {
         val c = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL; background = round(col(R.color.card), 18f)
+            orientation = LinearLayout.VERTICAL; background = round(col(R.color.card), 22f)
             setPadding(px(16), px(12), px(16), px(12))
         }
-        c.addView(text(getString(title), 13f, col(R.color.gold), true))
+        c.addView(text(getString(title), 13f, col(R.color.emerald), true))
         body.addView(c, LinearLayout.LayoutParams(-1, -2).apply { topMargin = px(12) })
         return c
     }

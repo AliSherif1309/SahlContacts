@@ -89,4 +89,15 @@
     <string name="exported">تم تصدير %1$d جهة اتصال</string>
     <string name="backup_hint">احفظه في مجلد يزامنه سهل للمزامنة مع OneDrive.</string>
     <string name="more">المزيد</string>
+    <string name="contacts_title">جهات الاتصال</string>
+    <string name="recent">الأخيرة</string>
+    <string name="favorite">إضافة للمفضلة</string>
+    <string name="unfavorite">إزالة من المفضلة</string>
+    <string name="hidden_short">مخفية</string>
+    <string name="talk_summary">%1$d مكالمة · آخرها %2$s</string>
+    <string name="recent_calls">المكالمات الأخيرة</string>
+    <string name="get_phone_hint">ثبّت سهل للهاتف لترى سجل المكالمات هنا.</string>
+    <string name="today">اليوم</string>
+    <string name="yesterday">أمس</string>
+    <string name="in_days">بعد %1$d يوم</string>
 </resources>

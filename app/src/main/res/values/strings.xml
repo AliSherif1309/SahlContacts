@@ -89,4 +89,15 @@
     <string name="exported">Exported %1$d contacts</string>
     <string name="backup_hint">Save into a folder that Sahl Sync syncs to OneDrive.</string>
     <string name="more">More</string>
+    <string name="contacts_title">Contacts</string>
+    <string name="recent">Recent</string>
+    <string name="favorite">Add to favorites</string>
+    <string name="unfavorite">Remove from favorites</string>
+    <string name="hidden_short">Hidden</string>
+    <string name="talk_summary">%1$d calls · last %2$s</string>
+    <string name="recent_calls">Recent calls</string>
+    <string name="get_phone_hint">Install Sahl Phone to see your call history here.</string>
+    <string name="today">today</string>
+    <string name="yesterday">yesterday</string>
+    <string name="in_days">in %1$d days</string>
 </resources>

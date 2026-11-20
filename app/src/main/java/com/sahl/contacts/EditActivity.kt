@@ -43,14 +43,14 @@ class EditActivity : SahlActivity() {
         contactId = intent.getLongExtra("id", 0L)
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(col(R.color.bg)) }
         root.addView(header(getString(if (contactId > 0) R.string.edit_contact else R.string.new_contact), true,
-            listOf("✓" to { save() })))
+            listOf(R.drawable.ic_check to { save() })))
         body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(px(16), px(16), px(16), px(40)) }
         root.addView(ScrollView(this).apply { addView(body) }, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(root)
 
         // Photo
         photoView = ImageView(this).apply {
-            scaleType = ImageView.ScaleType.CENTER_CROP; background = oval(col(R.color.emerald))
+            scaleType = ImageView.ScaleType.CENTER_CROP; background = oval(col(R.color.tonal)); imageTintList = android.content.res.ColorStateList.valueOf(col(R.color.emerald))
             clipToOutline = true; setImageResource(R.drawable.ic_person); setPadding(px(20), px(20), px(20), px(20))
             setOnClickListener { pickPhoto() }
         }
@@ -124,12 +124,12 @@ class EditActivity : SahlActivity() {
     }
 
     private fun label(id: Int, parent: LinearLayout = body) =
-        parent.addView(text(getString(id), 13f, col(R.color.gold), true).apply { setPadding(px(4), px(14), 0, px(4)) })
+        parent.addView(text(getString(id), 13f, col(R.color.emerald), true).apply { setPadding(px(4), px(14), 0, px(4)) })
 
     private fun input(hint: String, type: Int) = EditText(this).apply {
         this.hint = hint; inputType = type; textSize = 16f; typeface = font
         setTextColor(col(R.color.text)); setHintTextColor(col(R.color.sub))
-        background = round(col(R.color.card), 14f); setPadding(px(14), px(12), px(14), px(12))
+        background = round(col(R.color.tonal), 16f); setPadding(px(14), px(12), px(14), px(12))
     }
 
     private fun field(hintId: Int, type: Int): EditText {
@@ -142,7 +142,7 @@ class EditActivity : SahlActivity() {
     }
 
     private fun pill(s: String, go: () -> Unit) = text(s, 15f).apply {
-        background = round(col(R.color.card), 14f); setPadding(px(14), px(12), px(14), px(12))
+        background = round(col(R.color.tonal), 16f); setPadding(px(14), px(12), px(14), px(12))
         setOnClickListener { go() }
         body.addView(this, LinearLayout.LayoutParams(-1, -2))
     }
@@ -158,7 +158,7 @@ class EditActivity : SahlActivity() {
         }
         row.addView(et, LinearLayout.LayoutParams(0, -2, 1f))
         row.addView(sp)
-        row.addView(text("✕", 18f, col(R.color.sub)).apply { setPadding(px(10), 0, px(6), 0); setOnClickListener { phonesBox.removeView(row) } })
+        row.addView(iconButton(R.drawable.ic_close, 0, col(R.color.sub), 40, 18) { phonesBox.removeView(row) })
         row.tag = Pair(et, sp)
         phonesBox.addView(row)
     }
@@ -168,7 +168,7 @@ class EditActivity : SahlActivity() {
         val et = input(getString(R.string.email), InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
             .apply { setText(value) }
         row.addView(et, LinearLayout.LayoutParams(0, -2, 1f))
-        row.addView(text("✕", 18f, col(R.color.sub)).apply { setPadding(px(10), 0, px(6), 0); setOnClickListener { emailsBox.removeView(row) } })
+        row.addView(iconButton(R.drawable.ic_close, 0, col(R.color.sub), 40, 18) { emailsBox.removeView(row) })
         row.tag = et
         emailsBox.addView(row)
     }
@@ -247,7 +247,7 @@ class EditActivity : SahlActivity() {
         } catch (e: Exception) { }
     }
 
-    private fun showPhoto(b: Bitmap) { photoView.setPadding(0, 0, 0, 0); photoView.setImageBitmap(b) }
+    private fun showPhoto(b: Bitmap) { photoView.setPadding(0, 0, 0, 0); photoView.imageTintList = null; photoView.setImageBitmap(b) }
 
     private fun save() {
         val name = nameEt.text.toString()

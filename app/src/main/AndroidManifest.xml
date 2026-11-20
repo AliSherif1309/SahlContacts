@@ -17,6 +17,9 @@
 
     <queries>
         <package android:name="com.whatsapp" />
+        <package android:name="com.sahl.phone" />
+        <provider android:authorities="com.sahl.phone.union" />
+        <intent><action android:name="com.sahl.phone.action.CALL" /></intent>
         <package android:name="com.whatsapp.w4b" />
         <intent><action android:name="android.intent.action.VIEW" /><data android:scheme="https" /></intent>
     </queries>

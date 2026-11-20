@@ -35,7 +35,7 @@ class DuplicatesActivity : SahlActivity() {
         }
         for (g in groups) {
             val card = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL; background = round(col(R.color.card), 18f)
+                orientation = LinearLayout.VERTICAL; background = round(col(R.color.card), 22f)
                 setPadding(px(16), px(12), px(16), px(12))
             }
             for (p in g) {
