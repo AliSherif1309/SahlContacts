@@ -70,5 +70,6 @@
             android:authorities="com.sahl.contacts.union"
             android:exported="true"
             android:readPermission="com.sahl.permission.UNION" />
+        <activity android:name=".CrashActivity" android:exported="false" android:process=":crash" />
     </application>
 </manifest>
