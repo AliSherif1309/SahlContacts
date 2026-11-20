@@ -23,6 +23,8 @@ class MainActivity : SahlActivity() {
     private var groups: Map<String, Set<Long>> = emptyMap()
     private var members: Map<Long, Set<Long>> = emptyMap()
     private var groupFilter: String? = null
+    private var bdayIds: Set<Long> = emptySet()
+    private var talkedKeys: Set<String> = emptySet()
     private var query = ""
 
     private lateinit var list: ListView
@@ -165,11 +167,14 @@ class MainActivity : SahlActivity() {
             // People you talked to lately (from Sahl Phone through Sahl Union)
             val byKey = HashMap<String, Person>()
             for (x in p) for (n in x.numbers) byKey[Norm.phoneKey(n)] = x
-            val r = Union.recentNumbers(this, 40).mapNotNull { byKey[Norm.phoneKey(it)] }.distinctBy { it.id }.take(12)
+            val recentNums = Union.recentNumbers(this, 400)
+            val r = recentNums.take(40).mapNotNull { byKey[Norm.phoneKey(it)] }.distinctBy { it.id }.take(12)
+            val bd = try { Repo.birthdaysThisMonth(this) } catch (e: Exception) { emptySet() }
             main.post {
-                all = p; groups = g; members = m; recent = r
+                all = p; groups = g; members = m; recent = r; bdayIds = bd
+                talkedKeys = recentNums.map { Norm.phoneKey(it) }.toSet()
                 val gf = groupFilter
-                if (gf != null && !groups.containsKey(gf)) groupFilter = null
+                if (gf != null && !gf.startsWith("*") && !groups.containsKey(gf)) groupFilter = null
                 Thumbs.clear()
                 buildChips(); buildTop(); filter()
                 FavWidget.refresh(this)
@@ -180,7 +185,6 @@ class MainActivity : SahlActivity() {
     private fun buildChips() {
         chips.removeAllViews()
         val scroller = chips.parent as View
-        if (groups.isEmpty()) { scroller.visibility = View.GONE; return }
         scroller.visibility = View.VISIBLE
         fun chip(label: String, key: String?) {
             val on = groupFilter == key
@@ -192,6 +196,21 @@ class MainActivity : SahlActivity() {
         }
         chip(getString(R.string.all), null)
         for (t in groups.keys) chip(t, t)
+        // Smart groups — fill themselves, to help keep contacts tidy
+        for ((key, label) in smartGroups()) if (all.any { smartMatch(key, it) }) chip("✦ " + getString(label), key)
+    }
+
+    private fun smartGroups() = listOf(
+        "*bday" to R.string.sg_birthdays, "*intl" to R.string.sg_international, "*quiet" to R.string.sg_quiet,
+        "*nophoto" to R.string.sg_no_photo, "*nonumber" to R.string.sg_no_number)
+
+    private fun smartMatch(key: String, p: Person): Boolean = when (key) {
+        "*bday" -> p.id in bdayIds
+        "*intl" -> p.numbers.any { Countries.of(it, Sahl.countryCode(this), false) != null }
+        "*quiet" -> talkedKeys.isNotEmpty() && p.numbers.isNotEmpty() && p.numbers.none { Norm.phoneKey(it) in talkedKeys } && p.starred
+        "*nophoto" -> p.photo == null
+        "*nonumber" -> p.numbers.isEmpty()
+        else -> false
     }
 
     private fun visible(p: Person, hidden: Set<String>) = Vault.unlocked() || p.lookup !in hidden
@@ -230,10 +249,12 @@ class MainActivity : SahlActivity() {
     private fun filter() {
         val words = Norm.text(query).split(' ').filter { it.isNotBlank() }
         val dq = Norm.digits(query)
-        val inGroup = groupFilter?.let { t -> groups[t]?.flatMap { members[it] ?: emptySet() }?.toSet() ?: emptySet() }
+        val gfKey = groupFilter
+        val smart = gfKey != null && gfKey.startsWith("*")
+        val inGroup = if (smart) null else groupFilter?.let { t -> groups[t]?.flatMap { members[it] ?: emptySet() }?.toSet() ?: emptySet() }
         val hidden = Vault.hidden(this)
         shown = all.filter { p ->
-            visible(p, hidden) && (inGroup == null || p.id in inGroup) &&
+            visible(p, hidden) && (inGroup == null || p.id in inGroup) && (!smart || smartMatch(gfKey!!, p)) &&
                 (words.isEmpty() || words.all { w -> p.key.contains(w) } || (dq.length >= 3 && p.digits.contains(dq)))
         }
         // Keep the header in place (never replace its LayoutParams); hide its contents instead

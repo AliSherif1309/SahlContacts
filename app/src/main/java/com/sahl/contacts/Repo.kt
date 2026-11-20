@@ -184,6 +184,21 @@ object Repo {
             phones, emails, bday, company, note, groups)
     }
 
+    /** Contact ids whose birthday falls in this month. */
+    fun birthdaysThisMonth(c: Context): Set<Long> {
+        val m = "%02d".format(java.time.LocalDate.now().monthValue)
+        val out = HashSet<Long>()
+        c.contentResolver.query(Data.CONTENT_URI, arrayOf(Data.CONTACT_ID, Event.START_DATE),
+            "${Data.MIMETYPE}=? AND ${Event.TYPE}=?", arrayOf(Event.CONTENT_ITEM_TYPE, Event.TYPE_BIRTHDAY.toString()), null)?.use {
+            while (it.moveToNext()) {
+                val d = (it.getString(1) ?: continue).trim()
+                val mm = if (d.startsWith("--")) d.drop(2).take(2) else d.drop(5).take(2)
+                if (mm == m) out.add(it.getLong(0))
+            }
+        }
+        return out
+    }
+
     fun setStar(c: Context, id: Long, on: Boolean) {
         c.contentResolver.update(ContentUris.withAppendedId(Contacts.CONTENT_URI, id),
             ContentValues().apply { put(Contacts.STARRED, if (on) 1 else 0) }, null, null)

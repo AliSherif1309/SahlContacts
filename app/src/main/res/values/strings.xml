@@ -100,4 +100,9 @@
     <string name="today">today</string>
     <string name="yesterday">yesterday</string>
     <string name="in_days">in %1$d days</string>
+    <string name="sg_birthdays">Birthdays this month</string>
+    <string name="sg_international">International</string>
+    <string name="sg_quiet">Favorites you haven’t called</string>
+    <string name="sg_no_photo">No photo</string>
+    <string name="sg_no_number">No number</string>
 </resources>

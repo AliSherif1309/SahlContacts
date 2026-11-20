@@ -100,4 +100,9 @@
     <string name="today">اليوم</string>
     <string name="yesterday">أمس</string>
     <string name="in_days">بعد %1$d يوم</string>
+    <string name="sg_birthdays">أعياد ميلاد هذا الشهر</string>
+    <string name="sg_international">أرقام دولية</string>
+    <string name="sg_quiet">مفضلة لم تتصل بها</string>
+    <string name="sg_no_photo">بدون صورة</string>
+    <string name="sg_no_number">بدون رقم</string>
 </resources>
