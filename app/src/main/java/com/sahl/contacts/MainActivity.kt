@@ -35,6 +35,7 @@ class MainActivity : SahlActivity() {
     private lateinit var count: TextView
     private lateinit var permBox: LinearLayout
     private lateinit var lockBtn: View
+    private lateinit var bubble: TextView
 
     private val observer = object : ContentObserver(main) {
         override fun onChange(selfChange: Boolean) { main.removeCallbacks(reload); main.postDelayed(reload, 400) }
@@ -96,7 +97,19 @@ class MainActivity : SahlActivity() {
         body.addView(empty, FrameLayout.LayoutParams(-1, -1))
 
         index = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER }
-        body.addView(index, FrameLayout.LayoutParams(px(24), -1, Gravity.END).apply { topMargin = px(8); bottomMargin = px(96) })
+        body.addView(index, FrameLayout.LayoutParams(px(26), -1, Gravity.END).apply { topMargin = px(8); bottomMargin = px(96) })
+        bubble = text("", 34f, 0xFFFFFFFF.toInt(), true).apply {
+            gravity = Gravity.CENTER; background = oval(col(R.color.emerald)); visibility = View.GONE; elevation = 6f * dp
+        }
+        body.addView(bubble, FrameLayout.LayoutParams(px(76), px(76), Gravity.CENTER))
+        list.setOnScrollListener(object : AbsListView.OnScrollListener {
+            override fun onScrollStateChanged(v: AbsListView?, state: Int) {}
+            override fun onScroll(v: AbsListView?, first: Int, visible: Int, total: Int) {
+                // The letter bar only appears once the Favorites/Recent rows have scrolled away
+                val headerOnScreen = first == 0 && top.height > px(40) && top.childCount > 0 && top.getChildAt(0).visibility == View.VISIBLE
+                index.visibility = if (headerOnScreen) View.INVISIBLE else View.VISIBLE
+            }
+        })
         root.addView(body, LinearLayout.LayoutParams(-1, 0, 1f))
 
         frame.addView(fab(R.drawable.ic_add) { startActivity(Intent(this, EditActivity::class.java)) },
@@ -189,7 +202,7 @@ class MainActivity : SahlActivity() {
         val hidden = Vault.hidden(this)
         fun strip(title: Int, people: List<Person>) {
             if (people.isEmpty()) return
-            top.addView(label(getString(title)).apply { setPadding(px(20), px(10), 0, px(6)) })
+            top.addView(label(getString(title)).apply { setPaddingRelative(px(20), px(10), 0, px(6)) })
             val row = LinearLayout(this).apply { setPadding(px(12), 0, px(12), px(6)) }
             for (p in people) {
                 val cell = LinearLayout(this).apply {
@@ -240,13 +253,18 @@ class MainActivity : SahlActivity() {
         shown.forEachIndexed { i, p -> if (p.section !in starts) starts[p.section] = i }
         if (starts.size < 2) return
         val keys = starts.keys.toList()
-        for (k in keys) index.addView(text(k, 10f, col(R.color.sub), true).apply { gravity = Gravity.CENTER },
-            LinearLayout.LayoutParams(-1, 0, 1f))
+        // Show at most ~24 letters so they never get squeezed; touch still reaches every section
+        val step = Math.ceil(keys.size / 24.0).toInt().coerceAtLeast(1)
+        val shownKeys = keys.filterIndexed { i, _ -> i % step == 0 }
+        for (k in shownKeys) index.addView(text(k, 11f, col(R.color.sub), true).apply {
+            gravity = Gravity.CENTER; maxLines = 1; includeFontPadding = false
+        }, LinearLayout.LayoutParams(-1, 0, 1f))
         index.setOnTouchListener { v, e ->
             if (e.action == MotionEvent.ACTION_DOWN || e.action == MotionEvent.ACTION_MOVE) {
                 val i = ((e.y / v.height) * keys.size).toInt().coerceIn(0, keys.size - 1)
                 list.setSelection(starts[keys[i]]!! + list.headerViewsCount)
-            }
+                bubble.text = keys[i]; bubble.visibility = View.VISIBLE
+            } else bubble.visibility = View.GONE
             true
         }
     }
@@ -297,13 +315,13 @@ class MainActivity : SahlActivity() {
             val reuse = convertView?.tag as? Holder
             if (reuse == null) {
                 outer = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL }
-                val head = text("", 13f, col(R.color.emerald), true).apply { setPadding(px(22), px(14), px(22), px(4)) }
+                val head = text("", 13f, col(R.color.emerald), true).apply { setPaddingRelative(px(22), px(14), px(22), px(4)) }
                 val row = LinearLayout(this@MainActivity).apply {
-                    gravity = Gravity.CENTER_VERTICAL; setPadding(px(18), px(9), px(30), px(9))
+                    gravity = Gravity.CENTER_VERTICAL; setPaddingRelative(px(18), px(9), px(34), px(9))
                 }
                 val (f, iv, letter) = avatar(46)
                 row.addView(f)
-                val texts = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL; setPadding(px(14), 0, 0, 0) }
+                val texts = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL; setPaddingRelative(px(14), 0, 0, 0) }
                 val name = text("", 16f).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END }
                 val sub = text("", 13f, col(R.color.sub)).apply { maxLines = 1; textDirection = View.TEXT_DIRECTION_LTR; textAlignment = View.TEXT_ALIGNMENT_VIEW_START }
                 texts.addView(name); texts.addView(sub)

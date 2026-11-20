@@ -80,6 +80,7 @@ object Repo {
             while (it.moveToNext()) {
                 val t = it.getString(1)?.trim() ?: continue
                 if (t.isEmpty() || t.startsWith("System Group") || t.startsWith("Starred in") || t == "My Contacts") continue
+                if (t.startsWith("Restored from") || t.startsWith("تمت الاستعادة")) continue
                 byTitle.getOrPut(t) { mutableSetOf() }.add(it.getLong(0))
             }
         }
