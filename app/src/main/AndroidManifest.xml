@@ -40,7 +40,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".DetailActivity" android:exported="false" />
+        <activity android:name=".DetailActivity" android:exported="true" android:permission="com.sahl.permission.UNION">
+            <!-- Sahl Search opens a contact here -->
+            <intent-filter><action android:name="com.sahl.contacts.action.OPEN" /><category android:name="android.intent.category.DEFAULT" /></intent-filter>
+        </activity>
 
         <activity android:name=".EditActivity" android:exported="true" android:windowSoftInputMode="adjustResize">
             <!-- Lets other apps (and Sahl apps) open "Add contact" in Sahl Contacts -->

@@ -37,6 +37,22 @@ class UnionProvider : ContentProvider() {
                     for (p in Repo.list(c)) if (p.starred && p.lookup !in hidden) out.addRow(arrayOf(p.id, p.name, p.numbers.firstOrNull(), p.photo))
                     out
                 }
+                // Sahl Search: content://com.sahl.contacts.union/search?q=...
+                "search" -> {
+                    val out = MatrixCursor(arrayOf("kind", "title", "subtitle", "date", "action", "key", "value", "package"))
+                    val q = uri.getQueryParameter("q") ?: return out
+                    val words = Norm.text(q).split(' ').filter { it.isNotBlank() }
+                    val dq = Norm.digits(q)
+                    if (words.isEmpty()) return out
+                    val hidden = Vault.hidden(c)
+                    for (p in Repo.list(c)) {
+                        if (out.count >= 15) break
+                        if (p.lookup in hidden) continue
+                        if (words.all { p.key.contains(it) } || (dq.length >= 3 && p.digits.contains(dq)))
+                            out.addRow(arrayOf<Any>("contact", p.name, p.numbers.firstOrNull() ?: "", 0L, "com.sahl.contacts.action.OPEN", "id", p.id.toString(), c.packageName))
+                    }
+                    out
+                }
                 else -> null
             }
         } catch (e: Exception) { null }

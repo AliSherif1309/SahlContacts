@@ -25,7 +25,7 @@ class DetailActivity : SahlActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        id = intent.getLongExtra("id", 0L)
+        id = intent.getLongExtra("id", 0L).takeIf { it != 0L } ?: (intent.getStringExtra("id")?.toLongOrNull() ?: 0L)
         root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(col(R.color.bg)) }
         setContentView(root)
     }
