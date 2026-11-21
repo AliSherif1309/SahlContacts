@@ -105,4 +105,17 @@
     <string name="sg_quiet">مفضلة لم تتصل بها</string>
     <string name="sg_no_photo">بدون صورة</string>
     <string name="sg_no_number">بدون رقم</string>
+    <string name="t_out_call">مكالمة صادرة</string>
+    <string name="t_in_call">مكالمة واردة</string>
+    <string name="t_missed_call">مكالمة فائتة</string>
+    <string name="t_in_msg">رسالة واردة</string>
+    <string name="t_out_msg">رسالة مرسلة</string>
+    <string name="timeline">السجل (المكالمات والرسائل)</string>
+    <string name="show_all">عرض المزيد</string>
+    <string name="show_less">عرض أقل</string>
+    <string name="number_cleanup">تنظيف الأرقام</string>
+    <string name="numbers_clean">كل الأرقام مرتبة ✓</string>
+    <string name="fix_n_numbers">ترتيب %1$d رقمًا؟</string>
+    <string name="fix_all">إصلاح الكل</string>
+    <string name="fixed_n">تم إصلاح %1$d رقمًا</string>
 </resources>

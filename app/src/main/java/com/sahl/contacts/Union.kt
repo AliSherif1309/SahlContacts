@@ -38,6 +38,21 @@ object Union {
         return out
     }
 
+    data class MsgRow(val number: String, val incoming: Boolean, val date: Long, val body: String)
+
+    fun hasMessages(c: Context) = installed(c, "com.sahl.messages")
+
+    /** Text messages with one person (from Sahl Messages). */
+    fun messages(c: Context, numbers: List<String>, limit: Int = 30): List<MsgRow> {
+        val out = ArrayList<MsgRow>()
+        for (n in numbers) try {
+            c.contentResolver.query(Uri.parse("content://com.sahl.messages.union/history/" + Uri.encode(n) + "?limit=$limit"), null, null, null, null)?.use {
+                while (it.moveToNext()) out.add(MsgRow(n, it.getInt(1) == 1, it.getLong(0), it.getString(2) ?: ""))
+            }
+        } catch (e: Exception) { }
+        return out.distinctBy { it.date }.sortedByDescending { it.date }.take(limit)
+    }
+
     /** Call history with one person (any of their numbers). */
     fun history(c: Context, numbers: List<String>, limit: Int = 20): List<CallRow> {
         val out = ArrayList<CallRow>()

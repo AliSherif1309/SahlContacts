@@ -45,6 +45,10 @@ class SettingsActivity : SahlActivity() {
             setOnCheckedChangeListener { _, on -> p.edit().putBoolean("bday", on).apply() }
         })
         tools.addView(Button(this).apply {
+            text = getString(R.string.number_cleanup); typeface = font
+            setOnClickListener { numberCleanup() }
+        })
+        tools.addView(Button(this).apply {
             text = getString(R.string.duplicates); typeface = font
             setOnClickListener { startActivity(Intent(this@SettingsActivity, DuplicatesActivity::class.java)) }
         })
@@ -111,6 +115,26 @@ class SettingsActivity : SahlActivity() {
             } catch (e: Exception) { }
             val count = n
             runOnUiThread { Toast.makeText(this, getString(R.string.exported, count), Toast.LENGTH_LONG).show() }
+        }.start()
+    }
+
+    /** One tap: make all numbers the same clean form (+974…). Shows a preview first. */
+    private fun numberCleanup() {
+        Thread {
+            val fixes = try { Repo.numberFixes(this) } catch (e: Exception) { emptyList() }
+            runOnUiThread {
+                if (fixes.isEmpty()) { toast(R.string.numbers_clean); return@runOnUiThread }
+                val preview = fixes.take(8).joinToString("\n") { "${it.name}:  ${it.from}  →  ${it.to}" } +
+                    if (fixes.size > 8) "\n…" else ""
+                AlertDialog.Builder(this).setTitle(getString(R.string.fix_n_numbers, fixes.size)).setMessage(preview)
+                    .setPositiveButton(R.string.fix_all) { _, _ ->
+                        Thread {
+                            val n = Repo.applyFixes(this, fixes)
+                            runOnUiThread { Toast.makeText(this, getString(R.string.fixed_n, n), Toast.LENGTH_LONG).show() }
+                        }.start()
+                    }
+                    .setNegativeButton(R.string.cancel, null).show()
+            }
         }.start()
     }
 

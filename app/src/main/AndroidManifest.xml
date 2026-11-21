@@ -18,6 +18,8 @@
     <queries>
         <package android:name="com.whatsapp" />
         <package android:name="com.sahl.phone" />
+        <package android:name="com.sahl.messages" />
+        <provider android:authorities="com.sahl.messages.union" />
         <provider android:authorities="com.sahl.phone.union" />
         <intent><action android:name="com.sahl.phone.action.CALL" /></intent>
         <package android:name="com.whatsapp.w4b" />

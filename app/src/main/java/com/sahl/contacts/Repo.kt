@@ -199,6 +199,49 @@ object Repo {
         return out
     }
 
+    data class Fix(val dataId: Long, val name: String, val from: String, val to: String)
+
+    /** Numbers saved inconsistently (00974…, 974…, 5555 1234) → one clean international form (+974…). */
+    fun numberFixes(c: Context): List<Fix> {
+        val cc = Sahl.countryCode(c)
+        val out = ArrayList<Fix>()
+        c.contentResolver.query(Data.CONTENT_URI, arrayOf(Data._ID, Data.DISPLAY_NAME, Phone.NUMBER, RawContacts.ACCOUNT_TYPE),
+            "${Data.MIMETYPE}=?", arrayOf(Phone.CONTENT_ITEM_TYPE), null)?.use {
+            while (it.moveToNext()) {
+                if (isForeign(it.getString(3))) continue
+                val n = it.getString(2) ?: continue
+                val clean = cleanNumber(n, cc) ?: continue
+                if (clean != n) out.add(Fix(it.getLong(0), it.getString(1) ?: "", n, clean))
+            }
+        }
+        return out
+    }
+
+    /** null = leave as is (short codes, service numbers, unknown formats). */
+    fun cleanNumber(n: String, cc: String): String? {
+        val t = Norm.text(n).trim()
+        if (t.contains('*') || t.contains('#') || t.contains(',') || t.contains(';')) return null
+        val d = Norm.digits(t)
+        return when {
+            t.startsWith("+") && d.length >= 8 -> "+$d"
+            d.startsWith("00") && d.length >= 10 -> "+" + d.drop(2)
+            d.length == 8 && cc == "974" -> "+974$d"
+            d.startsWith(cc) && d.length == cc.length + 8 && cc == "974" -> "+$d"
+            else -> null
+        }
+    }
+
+    fun applyFixes(c: Context, fixes: List<Fix>): Int {
+        val ops = ArrayList<ContentProviderOperation>()
+        for (f in fixes) ops.add(ContentProviderOperation.newUpdate(Data.CONTENT_URI)
+            .withSelection("${Data._ID}=?", arrayOf(f.dataId.toString())).withValue(Phone.NUMBER, f.to).build())
+        return try {
+            var done = 0
+            for (chunk in ops.chunked(200)) { c.contentResolver.applyBatch(ContactsContract.AUTHORITY, ArrayList(chunk)); done += chunk.size }
+            Sahl.announce(c, Sahl.EVENT_CONTACTS_CHANGED); done
+        } catch (e: Exception) { 0 }
+    }
+
     fun setStar(c: Context, id: Long, on: Boolean) {
         c.contentResolver.update(ContentUris.withAppendedId(Contacts.CONTENT_URI, id),
             ContentValues().apply { put(Contacts.STARRED, if (on) 1 else 0) }, null, null)

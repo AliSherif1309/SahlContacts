@@ -105,4 +105,17 @@
     <string name="sg_quiet">Favorites you haven’t called</string>
     <string name="sg_no_photo">No photo</string>
     <string name="sg_no_number">No number</string>
+    <string name="t_out_call">Outgoing call</string>
+    <string name="t_in_call">Incoming call</string>
+    <string name="t_missed_call">Missed call</string>
+    <string name="t_in_msg">Message received</string>
+    <string name="t_out_msg">Message sent</string>
+    <string name="timeline">Timeline (calls and messages)</string>
+    <string name="show_all">Show more</string>
+    <string name="show_less">Show less</string>
+    <string name="number_cleanup">Clean up numbers</string>
+    <string name="numbers_clean">All numbers are already tidy ✓</string>
+    <string name="fix_n_numbers">Tidy %1$d numbers?</string>
+    <string name="fix_all">Fix all</string>
+    <string name="fixed_n">Fixed %1$d numbers</string>
 </resources>

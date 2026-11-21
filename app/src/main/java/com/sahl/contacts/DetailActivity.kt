@@ -19,6 +19,8 @@ import java.time.format.DateTimeFormatter
 
 class DetailActivity : SahlActivity() {
     private var id = 0L
+    private var msgs: List<Union.MsgRow> = emptyList()
+    private var showAll = false
     private lateinit var root: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,12 +39,13 @@ class DetailActivity : SahlActivity() {
                 ContactsContract.Contacts.openContactPhotoInputStream(contentResolver,
                     ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id), true)?.use { BitmapFactory.decodeStream(it) }
             } catch (e: Exception) { null }
-            val calls = if (f == null) emptyList() else Union.history(this, f.phones.map { it.number }, 20)
+            val calls = if (f == null) emptyList() else Union.history(this, f.phones.map { it.number }, 30)
+            val texts = if (f == null) emptyList() else Union.messages(this, f.phones.map { it.number }, 30)
             val groupNames = try {
                 if (f == null || f.groupIds.isEmpty()) emptyList()
                 else Repo.groups(this).filter { (_, ids) -> ids.any { it in f.groupIds } }.keys.toList()
             } catch (e: Exception) { emptyList() }
-            runOnUiThread { if (f == null) finish() else build(f, photo, calls, groupNames) }
+            runOnUiThread { if (f == null) finish() else { msgs = texts; build(f, photo, calls, groupNames) } }
         }.start()
     }
 
@@ -131,21 +134,40 @@ class DetailActivity : SahlActivity() {
             info.forEachIndexed { i, v -> if (i > 0) card.addView(divider()); card.addView(v) }
         }
 
-        // Call history (from Sahl Phone)
-        if (calls.isNotEmpty()) {
-            val card = section(body, getString(R.string.recent_calls))
-            for (c in calls.take(6)) {
-                val (ic, color) = when (c.type) {
-                    CallLog.Calls.OUTGOING_TYPE -> R.drawable.ic_arrow_out to col(R.color.emerald)
-                    CallLog.Calls.MISSED_TYPE, CallLog.Calls.REJECTED_TYPE -> R.drawable.ic_call_missed to col(R.color.danger)
-                    else -> R.drawable.ic_arrow_in to col(R.color.ok)
-                }
-                val row = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL; setPadding(px(4), px(8), px(4), px(8)) }
-                row.addView(icon(ic, color, 18))
-                row.addView(text(stamp(c.date), 14f).apply { setPadding(px(14), 0, 0, 0) }, LinearLayout.LayoutParams(0, -2, 1f))
-                row.addView(text(if (c.duration > 0) dur(c.duration) else "", 13f, col(R.color.sub)))
+        // People timeline: calls (Sahl Phone) and messages (Sahl Messages) together
+        data class Ev(val date: Long, val icon: Int, val color: Int, val title: String, val detail: String, val go: (() -> Unit)?)
+        val events = ArrayList<Ev>()
+        for (c in calls) {
+            val (ic, color, lbl) = when (c.type) {
+                CallLog.Calls.OUTGOING_TYPE -> Triple(R.drawable.ic_arrow_out, col(R.color.emerald), R.string.t_out_call)
+                CallLog.Calls.MISSED_TYPE, CallLog.Calls.REJECTED_TYPE -> Triple(R.drawable.ic_call_missed, col(R.color.danger), R.string.t_missed_call)
+                else -> Triple(R.drawable.ic_arrow_in, col(R.color.ok), R.string.t_in_call)
+            }
+            events.add(Ev(c.date, ic, color, getString(lbl), if (c.duration > 0) dur(c.duration) else "", null))
+        }
+        for (m in msgs) events.add(Ev(m.date, R.drawable.ic_chat, if (m.incoming) col(R.color.sub) else col(R.color.emerald),
+            getString(if (m.incoming) R.string.t_in_msg else R.string.t_out_msg), m.body.replace('\n', ' ')) { Union.sms(this, m.number) })
+        events.sortByDescending { it.date }
+        if (events.isNotEmpty()) {
+            val card = section(body, getString(R.string.timeline))
+            var lastDay = ""
+            for (e in events.take(if (showAll) 60 else 8)) {
+                val day = relDay(e.date)
+                if (day != lastDay) { lastDay = day; card.addView(text(day, 12f, col(R.color.sub), true).apply { setPaddingRelative(0, px(8), 0, px(2)) }) }
+                val row = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL; setPadding(px(4), px(7), px(4), px(7)) }
+                if (e.go != null) { row.setOnClickListener { e.go.invoke() }; row.press(12f) }
+                row.addView(icon(e.icon, e.color, 18))
+                val t = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPaddingRelative(px(14), 0, px(8), 0) }
+                t.addView(text(e.title, 14f))
+                if (e.detail.isNotEmpty() && e.go != null) t.addView(text(e.detail, 13f, col(R.color.sub)).apply { maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END })
+                row.addView(t, LinearLayout.LayoutParams(0, -2, 1f))
+                row.addView(text(listOf(if (e.go == null) e.detail else "", Instant.ofEpochMilli(e.date).atZone(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("HH:mm", loc()))).filter { it.isNotEmpty() }.joinToString("  ·  "), 12f, col(R.color.sub)))
                 card.addView(row)
             }
+            if (events.size > 8) card.addView(text(getString(if (showAll) R.string.show_less else R.string.show_all), 14f, col(R.color.emerald), true).apply {
+                gravity = Gravity.CENTER; setPadding(0, px(10), 0, px(4)); setOnClickListener { showAll = !showAll; load() }
+            }.press(12f))
         } else if (!Union.hasPhone(this) && f.phones.isNotEmpty()) {
             body.addView(text(getString(R.string.get_phone_hint), 12f, col(R.color.sub)).apply { gravity = Gravity.CENTER; setPadding(0, px(18), 0, 0) })
         }
