@@ -308,7 +308,12 @@ class MainActivity : SahlActivity() {
         if (n != null) {
             items.add(Triple(R.drawable.ic_call, getString(R.string.call)) { Union.call(this, n) })
             items.add(Triple(R.drawable.ic_chat, getString(R.string.message)) { Union.sms(this, n) })
-            items.add(Triple(R.drawable.ic_chat, getString(R.string.whatsapp)) { Actions.whatsapp(this, n) })
+            items.add(Triple(R.drawable.ic_whatsapp, getString(R.string.whatsapp)) {
+                if (p.numbers.size == 1) Actions.whatsapp(this, n)
+                else sheet(getString(R.string.whatsapp), p.numbers.map { num ->
+                    Triple(R.drawable.ic_whatsapp, num) { Actions.whatsapp(this, num) }
+                })
+            })
         }
         items.add(Triple(if (p.starred) R.drawable.ic_star else R.drawable.ic_star_border,
             getString(if (p.starred) R.string.unfavorite else R.string.favorite)) {
