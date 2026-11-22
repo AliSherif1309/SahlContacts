@@ -119,6 +119,7 @@ class MainActivity : SahlActivity() {
         setContentView(frame)
 
         Updater.dailyCheck(this)
+        Updater.checkOnStart(this)
         Birthdays.schedule(this)
         if (crashOpen) return
         if (granted()) start() else askPermissions()
