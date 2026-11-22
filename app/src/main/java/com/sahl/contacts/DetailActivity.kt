@@ -90,7 +90,12 @@ class DetailActivity : SahlActivity() {
         }
         action(R.drawable.ic_call, R.string.call, first != null) { Union.call(this, first!!) }
         action(R.drawable.ic_chat, R.string.message, first != null) { Union.sms(this, first!!) }
-        action(R.drawable.ic_chat, R.string.whatsapp, first != null) { Actions.whatsapp(this, first!!) }
+        action(R.drawable.ic_whatsapp, R.string.whatsapp, first != null) {
+            if (f.phones.size == 1) Actions.whatsapp(this, first!!)
+            else sheet(getString(R.string.whatsapp), f.phones.map { p ->
+                Triple(R.drawable.ic_whatsapp, "${p.number} · ${typeLabel(p.type)}") { Actions.whatsapp(this, p.number) }
+            })
+        }
         if (f.emails.isNotEmpty()) action(R.drawable.ic_mail, R.string.email, true) { Actions.email(this, f.emails[0]) }
         else action(R.drawable.ic_share, R.string.share, true) { Actions.share(this, f.lookup) }
         body.addView(actions)
@@ -111,6 +116,7 @@ class DetailActivity : SahlActivity() {
                 texts.addView(text(typeLabel(p.type) + countryOf(p.number), 12f, col(R.color.sub)))
                 row.addView(texts, LinearLayout.LayoutParams(0, -2, 1f))
                 row.addView(iconButton(R.drawable.ic_chat, 0, col(R.color.emerald), 40, 20) { Union.sms(this, p.number) })
+                row.addView(iconButton(R.drawable.ic_whatsapp, 0, col(R.color.emerald), 40, 20) { Actions.whatsapp(this, p.number) })
                 card.addView(row)
             }
         }
