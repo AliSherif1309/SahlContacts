@@ -37,6 +37,11 @@ class UnionProvider : ContentProvider() {
                     for (p in Repo.list(c)) if (p.starred && p.lookup !in hidden) out.addRow(arrayOf(p.id, p.name, p.numbers.firstOrNull(), p.photo))
                     out
                 }
+                "hidden" -> {
+                    val out = MatrixCursor(arrayOf("lookup"))
+                    if (!Vault.unlocked()) for (k in Vault.hidden(c)) out.addRow(arrayOf(k))
+                    out
+                }
                 // Sahl Search: content://com.sahl.contacts.union/search?q=...
                 "search" -> {
                     val out = MatrixCursor(arrayOf("kind", "title", "subtitle", "date", "action", "key", "value", "package"))
