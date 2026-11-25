@@ -116,7 +116,7 @@ class BirthdayReceiver : BroadcastReceiver() {
                         val open = PendingIntent.getActivity(ctx, id.toInt(),
                             Intent(ctx, DetailActivity::class.java).putExtra("id", id).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-                        nm.notify(10_000 + id.toInt(), Notification.Builder(ctx, "birthdays_chime").setSmallIcon(R.drawable.ic_person)
+                        nm.notify(10_000 + id.toInt(), SahlNotif.apply(ctx, Notification.Builder(ctx, "birthdays_chime"))
                             .setContentTitle(c.getString(R.string.birthday_today, name))
                             .setContentText(c.getString(R.string.birthday_wish))
                             .setContentIntent(open).setAutoCancel(true).build())
