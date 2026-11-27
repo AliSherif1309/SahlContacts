@@ -1,0 +1,281 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:2:1-96:12
+INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:2:1-96:12
+INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:2:1-96:12
+INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:2:1-96:12
+	package
+		INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:2:11-69
+permission#com.sahl.permission.UNION
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:5:5-8:47
+	android:label
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:7:9-38
+	android:protectionLevel
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:8:9-44
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:6:9-49
+uses-permission#com.sahl.permission.UNION
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:9:5-65
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:9:22-62
+uses-permission#android.permission.READ_CONTACTS
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:11:5-72
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:11:22-69
+uses-permission#android.permission.WRITE_CONTACTS
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:12:5-73
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:12:22-70
+uses-permission#android.permission.INTERNET
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:13:5-67
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:13:22-64
+uses-permission#android.permission.POST_NOTIFICATIONS
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:14:5-77
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:14:22-74
+uses-permission#android.permission.USE_BIOMETRIC
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:15:5-72
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:15:22-69
+uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:16:5-81
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:16:22-78
+queries
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:18:5-38:15
+package#com.sahl.home
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:19:9-49
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:19:18-46
+package#com.aly.sahlpdf
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:20:9-51
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:20:18-48
+package#com.sahl.pdf
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:21:9-48
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:21:18-45
+package#com.aly.trueqibla
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:23:9-53
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:23:18-50
+package#com.aly.sahlsync
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:24:9-52
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:24:18-49
+package#com.sahl.tools
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:25:9-50
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:25:18-47
+package#com.sahl.adhan
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:26:9-50
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:26:18-47
+package#com.sahl.files
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:27:9-50
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:27:18-47
+package#com.sahl.gallery
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:28:9-52
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:28:18-49
+package#com.sahl.camera
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:29:9-51
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:29:18-48
+package#com.whatsapp
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:30:9-48
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:30:18-45
+package#com.sahl.phone
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:31:9-50
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:31:18-47
+package#com.sahl.messages
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:32:9-53
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:32:18-50
+provider
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:33:9-67
+	android:authorities
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:33:19-64
+intent#action:name:com.sahl.phone.action.CALL
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:35:9-78
+action#com.sahl.phone.action.CALL
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:35:17-69
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:35:25-66
+package#com.whatsapp.w4b
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:36:9-52
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:36:18-49
+intent#action:name:android.intent.action.VIEW+data:scheme:https
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:37:9-109
+action#android.intent.action.VIEW
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:37:17-69
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:37:25-66
+data
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:37:69-100
+	android:scheme
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:37:75-97
+	android:mimeType
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:64:23-72
+application
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:40:5-95:19
+INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:40:5-95:19
+	android:extractNativeLibs
+		INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml
+	android:supportsRtl
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:43:9-35
+	android:label
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:41:9-41
+	android:roundIcon
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:42:44-89
+	android:icon
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:42:9-43
+	android:theme
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:44:9-41
+activity#com.sahl.contacts.MainActivity
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:46:9-52:20
+	android:windowSoftInputMode
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:46:72-114
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:46:48-71
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:46:19-47
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.APP_CONTACTS+category:name:android.intent.category.LAUNCHER
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:47:13-51:29
+action#android.intent.action.MAIN
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:48:17-69
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:48:25-66
+category#android.intent.category.LAUNCHER
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:49:17-77
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:49:27-74
+category#android.intent.category.APP_CONTACTS
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:50:17-81
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:50:27-78
+activity#com.sahl.contacts.DetailActivity
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:54:9-57:20
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:54:50-73
+	android:permission
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:54:74-120
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:54:19-49
+intent-filter#action:name:com.sahl.contacts.action.OPEN+category:name:android.intent.category.DEFAULT
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:56:13-158
+action#com.sahl.contacts.action.OPEN
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:56:28-83
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:56:36-80
+category#android.intent.category.DEFAULT
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:56:83-142
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:56:93-139
+activity#com.sahl.contacts.EditActivity
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:59:9-70:20
+	android:windowSoftInputMode
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:59:72-114
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:59:48-71
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:59:19-47
+intent-filter#action:name:android.intent.action.INSERT+category:name:android.intent.category.DEFAULT+data:mimeType:vnd.android.cursor.dir/contact
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:61:13-65:29
+action#android.intent.action.INSERT
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:62:17-71
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:62:25-68
+intent-filter#action:name:com.sahl.contacts.action.EDIT+category:name:android.intent.category.DEFAULT
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:66:13-69:29
+action#com.sahl.contacts.action.EDIT
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:67:17-72
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:67:25-69
+activity#com.sahl.contacts.SettingsActivity
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:72:9-79
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:72:52-76
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:72:19-51
+activity#com.sahl.contacts.DuplicatesActivity
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:73:9-81
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:73:54-78
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:73:19-53
+receiver#com.sahl.contacts.BirthdayReceiver
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:75:9-80:20
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:75:52-75
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:75:19-51
+intent-filter#action:name:android.intent.action.BOOT_COMPLETED+action:name:android.intent.action.MY_PACKAGE_REPLACED
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:76:13-79:29
+action#android.intent.action.BOOT_COMPLETED
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:77:17-79
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:77:25-76
+action#android.intent.action.MY_PACKAGE_REPLACED
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:78:17-84
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:78:25-81
+receiver#com.sahl.contacts.FavWidget
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:82:9-85:20
+	android:label
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:82:70-104
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:82:45-69
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:82:19-44
+intent-filter#action:name:android.appwidget.action.APPWIDGET_UPDATE
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:83:13-111
+action#android.appwidget.action.APPWIDGET_UPDATE
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:83:28-95
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:83:36-92
+meta-data#android.appwidget.provider
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:84:13-108
+	android:resource
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:84:66-105
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:84:24-65
+provider#com.sahl.contacts.UnionProvider
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:88:9-93:67
+	android:readPermission
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:92:13-63
+	android:authorities
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:90:13-58
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:91:13-36
+	android:writePermission
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:93:13-64
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:89:13-42
+activity#com.sahl.contacts.CrashActivity
+ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:94:9-101
+	android:process
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:94:74-98
+	android:exported
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:94:49-73
+	android:name
+		ADDED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml:94:19-48
+uses-sdk
+INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml
+INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Sahl_Apps\SahlContacts\app\src\main\AndroidManifest.xml
