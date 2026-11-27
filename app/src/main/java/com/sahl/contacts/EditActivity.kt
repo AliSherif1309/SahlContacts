@@ -18,6 +18,7 @@ import java.time.LocalDate
 class EditActivity : SahlActivity() {
     private var contactId = 0L
     private var rawId: Long? = null
+    private var otherRawIds: List<Long> = emptyList()
     private var account = Account(null, null)
     private var accounts: List<Account> = emptyList()
     private var birthday: String? = null
@@ -88,7 +89,7 @@ class EditActivity : SahlActivity() {
     private fun fill(acc: List<Account>, f: Full?) {
         accounts = acc
         if (f != null) {
-            rawId = f.rawId; account = f.account
+            rawId = f.rawId; otherRawIds = f.otherRawIds; account = f.account
             nameEt.setText(f.name); companyEt.setText(f.company ?: ""); noteEt.setText(f.note ?: "")
             for (p in f.phones) addPhone(p.number, p.type)
             for (e in f.emails) addEmail(e)
@@ -261,10 +262,10 @@ class EditActivity : SahlActivity() {
         val emails = (0 until emailsBox.childCount).map { (emailsBox.getChildAt(it).tag as EditText).text.toString().trim() }
             .filter { it.isNotEmpty() }
         if (name.isBlank() && phones.isEmpty()) { toast(R.string.name_required); return }
-        val acc = account; val raw = rawId; val bd = birthday; val gids = groupIds.toSet(); val ph = photo
+        val acc = account; val raw = rawId; val otherRaws = otherRawIds; val bd = birthday; val gids = groupIds.toSet(); val ph = photo
         val company = companyEt.text.toString(); val note = noteEt.text.toString()
         Thread {
-            val id = Repo.save(this, raw, acc, name, phones, emails, bd, company, note, gids, ph)
+            val id = Repo.save(this, raw, acc, name, phones, emails, bd, company, note, gids, ph, otherRaws)
             runOnUiThread {
                 if (id == null) { toast(R.string.save_failed); return@runOnUiThread }
                 toast(R.string.saved)
