@@ -141,14 +141,12 @@ object Repo {
         val editable = ArrayList<Pair<Long, Account>>()
         val fallback = ArrayList<Pair<Long, Account>>()
         c.contentResolver.query(RawContacts.CONTENT_URI,
-            arrayOf(RawContacts._ID, RawContacts.ACCOUNT_TYPE, RawContacts.ACCOUNT_NAME, RawContacts.RAW_CONTACT_IS_READ_ONLY),
+            arrayOf(RawContacts._ID, RawContacts.ACCOUNT_TYPE, RawContacts.ACCOUNT_NAME),
             "${RawContacts.CONTACT_ID}=? AND ${RawContacts.DELETED}=0", arrayOf(contactId.toString()), null)?.use {
             while (it.moveToNext()) {
                 val t = it.getString(1)
-                val ro = it.getInt(3) == 1
                 val cand = it.getLong(0) to Account(t, it.getString(2))
-                if (!isForeign(t) && !ro) editable.add(cand)
-                else if (!isForeign(t)) fallback.add(cand)
+                if (!isForeign(t)) editable.add(cand)
                 else if (fallback.isEmpty()) fallback.add(cand)
             }
         }

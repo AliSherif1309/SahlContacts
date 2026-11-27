@@ -66,5 +66,17 @@ class UnionProvider : ContentProvider() {
     override fun getType(uri: Uri): String? = null
     override fun insert(uri: Uri, values: ContentValues?): Uri? = null
     override fun delete(uri: Uri, selection: String?, args: Array<out String>?) = 0
-    override fun update(uri: Uri, values: ContentValues?, selection: String?, args: Array<out String>?) = 0
+    override fun update(uri: Uri, values: ContentValues?, selection: String?, args: Array<out String>?): Int {
+        val c = context ?: return 0
+        return try {
+            if (uri.pathSegments.firstOrNull() == "star") {
+                val id = uri.pathSegments.getOrNull(1)?.toLongOrNull() ?: return 0
+                val on = (values?.getAsInteger("starred") ?: 0) == 1
+                Repo.setStar(c, id, on)
+                FavWidget.refresh(c)
+                Sahl.announce(c, Sahl.EVENT_CONTACTS_CHANGED)
+                1
+            } else 0
+        } catch (e: Exception) { 0 }
+    }
 }

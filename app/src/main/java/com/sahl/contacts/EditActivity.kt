@@ -41,7 +41,7 @@ class EditActivity : SahlActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        contactId = intent.getLongExtra("id", 0L)
+        contactId = intent.getLongExtra("id", 0L).takeIf { it != 0L } ?: (intent.getStringExtra("id")?.toLongOrNull() ?: 0L)
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(col(R.color.bg)) }
         root.addView(header(getString(if (contactId > 0) R.string.edit_contact else R.string.new_contact), true,
             listOf(R.drawable.ic_check to { save() })))
@@ -81,7 +81,7 @@ class EditActivity : SahlActivity() {
 
         Thread {
             val acc = Repo.accounts(this)
-            val f = if (contactId > 0) Repo.full(this, contactId, true) else null
+            val f = if (contactId > 0) try { Repo.full(this, contactId, true) } catch (e: Exception) { null } else null
             runOnUiThread { fill(acc, f) }
         }.start()
     }
