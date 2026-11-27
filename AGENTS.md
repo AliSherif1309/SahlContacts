@@ -5,11 +5,3 @@
 # Contacts tab parity
 
 - Sahl Phone's Contacts tab mirrors Sahl Contacts' criteria, grouping, filtering, and behaviors (`Repo.list`, `MainActivity`). When updating Sahl Contacts' contacts list criteria or quick actions, mirror the same update in `AliSherif1309/SahlPhone`.
-
-# Planning before editing
-
-- For any task that modifies code or files (unless I say "skip plan"):
-  - Inspect the relevant files first without editing anything.
-  - Output a concise plan (goal, exact files to change, risks, and test steps).
-  - End with "Plan ready. Reply 'Proceed' to execute." and STOP.
-  - Only edit files and run tests after I reply "Proceed".
