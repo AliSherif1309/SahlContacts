@@ -35,7 +35,8 @@ data class Full(
     val name: String, val starred: Boolean,
     val phones: List<PhoneNum>, val emails: List<String>,
     val birthday: String?, val company: String?, val note: String?,
-    val groupIds: Set<Long>
+    val groupIds: Set<Long>,
+    val otherRawIds: List<Long> = emptyList()
 )
 
 /** Reads and writes Android's shared contacts database. */
@@ -135,23 +136,27 @@ object Repo {
         return list
     }
 
-    /** The raw contact we edit: the user's own copy, not WhatsApp's. */
-    private fun pickRaw(c: Context, contactId: Long): Pair<Long, Account>? {
-        var best: Pair<Long, Account>? = null
+    /** Editable raw contacts for this contact: the user's own copies (never WhatsApp's), primary first. */
+    private fun editableRaws(c: Context, contactId: Long): List<Pair<Long, Account>> {
+        val editable = ArrayList<Pair<Long, Account>>()
+        val fallback = ArrayList<Pair<Long, Account>>()
         c.contentResolver.query(RawContacts.CONTENT_URI,
-            arrayOf(RawContacts._ID, RawContacts.ACCOUNT_TYPE, RawContacts.ACCOUNT_NAME),
+            arrayOf(RawContacts._ID, RawContacts.ACCOUNT_TYPE, RawContacts.ACCOUNT_NAME, RawContacts.RAW_CONTACT_IS_READ_ONLY),
             "${RawContacts.CONTACT_ID}=? AND ${RawContacts.DELETED}=0", arrayOf(contactId.toString()), null)?.use {
             while (it.moveToNext()) {
                 val t = it.getString(1)
+                val ro = it.getInt(3) == 1
                 val cand = it.getLong(0) to Account(t, it.getString(2))
-                if (!isForeign(t)) { if (best == null || t == "com.google") best = cand }
-                else if (best == null) best = cand
+                if (!isForeign(t) && !ro) editable.add(cand)
+                else if (!isForeign(t)) fallback.add(cand)
+                else if (fallback.isEmpty()) fallback.add(cand)
             }
         }
-        return best
+        val list = if (editable.isNotEmpty()) editable else fallback
+        return list.sortedBy { if (it.second.type == "com.google") 0 else 1 }
     }
 
-    /** Loads a contact. editOnly = only the editable raw contact's rows. */
+    /** Loads a contact. editOnly = only the editable raw contacts' rows. */
     fun full(c: Context, contactId: Long, editOnly: Boolean): Full? {
         val cr = c.contentResolver
         var lookup = ""; var starred = false; var display = ""
@@ -160,28 +165,31 @@ object Repo {
             if (!it.moveToFirst()) return null
             lookup = it.getString(0) ?: ""; starred = it.getInt(1) == 1; display = it.getString(2) ?: ""
         } ?: return null
-        val raw = pickRaw(c, contactId) ?: return null
-        val sel = if (editOnly) "${Data.RAW_CONTACT_ID}=?" else "${Data.CONTACT_ID}=?"
-        val arg = arrayOf((if (editOnly) raw.first else contactId).toString())
+        val raws = editableRaws(c, contactId)
+        val raw = raws.firstOrNull() ?: return null
+        val editIds = raws.map { it.first }
+        val sel = if (editOnly) "${Data.RAW_CONTACT_ID} IN (${editIds.joinToString(",")})" else "${Data.CONTACT_ID}=?"
+        val arg = if (editOnly) null else arrayOf(contactId.toString())
         val phones = ArrayList<PhoneNum>(); val emails = ArrayList<String>(); val groups = HashSet<Long>()
         var name: String? = null; var bday: String? = null; var company: String? = null; var note: String? = null
         cr.query(Data.CONTENT_URI, arrayOf(Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.RAW_CONTACT_ID), sel, arg, null)?.use {
             while (it.moveToNext()) {
                 val v = it.getString(1) ?: continue
+                val rowRawId = it.getLong(3)
                 when (it.getString(0)) {
-                    StructuredName.CONTENT_ITEM_TYPE -> if (name == null || it.getLong(3) == raw.first) name = v
+                    StructuredName.CONTENT_ITEM_TYPE -> if (name == null || rowRawId == raw.first) name = v
                     Phone.CONTENT_ITEM_TYPE -> if (phones.none { p -> Norm.phoneKey(p.number) == Norm.phoneKey(v) })
                         phones.add(PhoneNum(v, it.getInt(2)))
                     Email.CONTENT_ITEM_TYPE -> if (v !in emails) emails.add(v)
                     Event.CONTENT_ITEM_TYPE -> if (it.getInt(2) == Event.TYPE_BIRTHDAY) bday = v
                     Organization.CONTENT_ITEM_TYPE -> company = v
                     Note.CONTENT_ITEM_TYPE -> if (v.isNotBlank()) note = v
-                    GroupMembership.CONTENT_ITEM_TYPE -> v.toLongOrNull()?.let { g -> groups.add(g) }
+                    GroupMembership.CONTENT_ITEM_TYPE -> if (!editOnly || rowRawId == raw.first) v.toLongOrNull()?.let { g -> groups.add(g) }
                 }
             }
         }
         return Full(contactId, lookup, raw.first, raw.second, name ?: (if (editOnly) "" else display), starred,
-            phones, emails, bday, company, note, groups)
+            phones, emails, bday, company, note, groups, editIds.drop(1))
     }
 
     /** Contact ids whose birthday falls in this month. */
@@ -259,7 +267,8 @@ object Repo {
      */
     fun save(
         c: Context, rawId: Long?, account: Account, name: String, phones: List<PhoneNum>, emails: List<String>,
-        birthday: String?, company: String?, note: String?, groupIds: Set<Long>, photo: ByteArray?
+        birthday: String?, company: String?, note: String?, groupIds: Set<Long>, photo: ByteArray?,
+        otherRawIds: List<Long> = emptyList()
     ): Long? {
         val ops = ArrayList<ContentProviderOperation>()
         fun row(mime: String): ContentProviderOperation.Builder {
@@ -291,8 +300,35 @@ object Repo {
         if (!note.isNullOrBlank()) ops.add(row(Note.CONTENT_ITEM_TYPE).withValue(Note.NOTE, note.trim()).build())
         for (g in groupIds) ops.add(row(GroupMembership.CONTENT_ITEM_TYPE).withValue(GroupMembership.GROUP_ROW_ID, g).build())
         if (photo != null) ops.add(row(Photo.CONTENT_ITEM_TYPE).withValue(Photo.PHOTO, photo).build())
+
+        // Keep secondary editable raw contacts in sync so edited/deleted numbers don't stay behind
+        val otherOps = ArrayList<ContentProviderOperation>()
+        if (rawId != null) {
+            val synced = listOf(Phone.CONTENT_ITEM_TYPE, Email.CONTENT_ITEM_TYPE, Organization.CONTENT_ITEM_TYPE, Note.CONTENT_ITEM_TYPE)
+            for (oid in otherRawIds) {
+                for (m in synced) otherOps.add(ContentProviderOperation.newDelete(Data.CONTENT_URI)
+                    .withSelection("${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE}=?", arrayOf(oid.toString(), m)).build())
+                otherOps.add(ContentProviderOperation.newDelete(Data.CONTENT_URI)
+                    .withSelection("${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE}=? AND ${Data.DATA2}=?",
+                        arrayOf(oid.toString(), Event.CONTENT_ITEM_TYPE, Event.TYPE_BIRTHDAY.toString())).build())
+                if (name.isNotBlank()) {
+                    otherOps.add(ContentProviderOperation.newDelete(Data.CONTENT_URI)
+                        .withSelection("${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE}=?",
+                            arrayOf(oid.toString(), StructuredName.CONTENT_ITEM_TYPE)).build())
+                    otherOps.add(ContentProviderOperation.newInsert(Data.CONTENT_URI)
+                        .withValue(Data.RAW_CONTACT_ID, oid)
+                        .withValue(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE)
+                        .withValue(StructuredName.DISPLAY_NAME, name.trim()).build())
+                }
+            }
+        }
         return try {
-            val res = c.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+            val res = try {
+                c.contentResolver.applyBatch(ContactsContract.AUTHORITY, ArrayList(ops + otherOps))
+            } catch (e: Exception) {
+                if (otherOps.isEmpty()) throw e
+                c.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+            }
             val raw = rawId ?: ContentUris.parseId(res[0].uri!!)
             var cid: Long? = null
             c.contentResolver.query(ContentUris.withAppendedId(RawContacts.CONTENT_URI, raw),
