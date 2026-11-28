@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.provider.CallLog
 import android.provider.ContactsContract
@@ -67,7 +68,11 @@ class DetailActivity : SahlActivity() {
         letter.text = Norm.section(f.name).let { if (it == "#") f.name.take(1) else it }
         if (photo != null) { iv.setImageBitmap(photo); letter.visibility = View.GONE }
         body.addView(av, LinearLayout.LayoutParams(px(116), px(116)).apply { gravity = Gravity.CENTER_HORIZONTAL })
-        body.addView(text(f.name, 26f, col(R.color.text), true).apply { gravity = Gravity.CENTER; setPadding(0, px(14), 0, 0) })
+        body.addView(text(f.name, 26f, col(R.color.text), true).apply {
+            gravity = Gravity.CENTER; setPadding(0, px(14), 0, px(10))
+            setLineSpacing(px(6).toFloat(), 1f)
+            if (Build.VERSION.SDK_INT >= 28) isFallbackLineSpacing = true
+        })
         val sub = listOfNotNull(f.company?.takeIf { it.isNotBlank() },
             if (Vault.isHidden(this, f.lookup)) getString(R.string.hidden_short) else null).joinToString(" · ")
         if (sub.isNotEmpty()) body.addView(text(sub, 14f, col(R.color.sub)).apply { gravity = Gravity.CENTER; setPadding(0, px(2), 0, 0) })
